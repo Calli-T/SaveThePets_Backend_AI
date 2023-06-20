@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3fdd73fd-e72b-402e-8e35-843e634b9919" name="변경" comment="Similarity post_id 받아서 DB 보고 가져와서 best 값 사용하도록 수정함&#10;DB 업뎃이랑 spring에 연락하는건 다음에 할일">
+    <list default="true" id="3fdd73fd-e72b-402e-8e35-843e634b9919" name="변경" comment="로직 구현 시밀러리티">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AI/breed_classification/serializer.py" beforeDir="false" afterPath="$PROJECT_DIR$/AI/breed_classification/serializer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AI/breed_classification/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/AI/breed_classification/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AI/breed_classification/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/AI/breed_classification/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -135,7 +135,14 @@
       <option name="project" value="LOCAL" />
       <updated>1687235205997</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="로직 구현 시밀러리티">
+      <created>1687242341983</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1687242341983</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -153,7 +160,8 @@
     <MESSAGE value="init" />
     <MESSAGE value="bit file init" />
     <MESSAGE value="Similarity post_id 받아서 DB 보고 가져와서 best 값 사용하도록 수정함&#10;DB 업뎃이랑 spring에 연락하는건 다음에 할일" />
-    <option name="LAST_COMMIT_MESSAGE" value="Similarity post_id 받아서 DB 보고 가져와서 best 값 사용하도록 수정함&#10;DB 업뎃이랑 spring에 연락하는건 다음에 할일" />
+    <MESSAGE value="로직 구현 시밀러리티" />
+    <option name="LAST_COMMIT_MESSAGE" value="로직 구현 시밀러리티" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

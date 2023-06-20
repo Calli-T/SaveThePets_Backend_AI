@@ -1,8 +1,5 @@
 import io
-
-from rest_framework import viewsets, permissions, generics, status
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 
 from django.http.response import HttpResponse
@@ -12,6 +9,7 @@ from .serializer import ClassifySerializer, SimilaritySerializer
 import keras.applications.nasnet
 import numpy as np
 import os
+import time
 from keras.models import Model
 from keras.layers import GlobalAveragePooling2D, Lambda, Input
 from keras.applications.nasnet import NASNetLarge
@@ -113,19 +111,7 @@ def images_to_array(data_dir):
         img_pixels = tf.keras.preprocessing.image.load_img(img_dir, target_size=img_size)
         X[i] = img_pixels
 
-    # print('Ouptut Data Size: ', X.shape)
     return X
-
-
-'''
-
-def str_to_imgarray(list):
-    X = [img.resize((331, 331)) for img in list]
-    X = [np.array(img) for img in X]
-    # print(np.shape(X))
-    return X
-
-'''
 
 
 def get_features(model_name, data_preprocessor, input_size, data):
@@ -137,7 +123,6 @@ def get_features(model_name, data_preprocessor, input_size, data):
     feature_extractor = Model(inputs=input_layer, outputs=avg)
     feature_maps = feature_extractor.predict(data, batch_size=64, verbose=1)
 
-    # print('Feature maps shape: ', feature_maps.shape)
     return feature_maps
 
 
@@ -169,25 +154,143 @@ def cos_sim(A, B):
     return dot(A, B) / (norm(A) * norm(B))
 
 
+def setDBSimilarity(post_id):
+    sql = f"select picture, post_id from postpictures where not post_id = '{post_id}'"
+    res = cursor.execute(sql)
+    urls = []
+    picture_post_id = []
+    best_score = 0.0
+    best_post_id = -1
+
+    # 앞 뒤 자르고 url만 남김
+    for line in res:
+        urls.append(line[0].__str__())
+        picture_post_id.append(line[1])
+
+    sql = f"select picture from postpictures where post_id = '{post_id}'"
+    res = cursor.execute(sql)
+    post_urls = []
+
+    # 앞 뒤 자르고 url만 남김
+    for line in res:
+        post_urls.append(line.__str__()[2:-3])
+
+    images = []
+    for url in urls:
+        response = requests.get(url)
+        images.append(Image.open(BytesIO(response.content)))
+
+    images = [image.resize((331, 331)) for image in images]
+    images = np.array([np.array(image) for image in images])
+
+    post_images = []
+    for url in post_urls:
+        response = requests.get(url)
+        post_images.append(Image.open(BytesIO(response.content)))
+
+    post_images = [image.resize((331, 331)) for image in post_images]
+    post_images = np.array([np.array(image) for image in post_images])
+
+    post_feature_vector = gen_test_features(post_images)
+    feature_vector = gen_test_features(images)
+
+    for i in range(len(urls)):
+        for j in range(len(post_feature_vector)):
+            now = cos_sim(post_feature_vector[j], feature_vector[i])
+            if now > best_score:
+                best_score = now
+                best_post_id = picture_post_id[i]
+
+    r = requests.post('http://127.0.0.1:8080/post/analyze', headers={'Content-type': 'application/json'},
+                      json={"missingPostId": post_id, "sightPostId": best_post_id})
+
+    return best_post_id
+
+
+def get_breed_with_post_id(post_id):
+    urls = []
+
+    sql = 'select picture from postpictures where post_id = ' + str(post_id)
+    res = cursor.execute(sql)
+
+    # 앞 뒤 자르고 url만 남김
+    for line in res:
+        urls.append(line.__str__()[2:-3])
+
+    images = []
+    for url in urls:
+        response = requests.get(url)
+        images.append(Image.open(BytesIO(response.content)))
+
+    images = [image.resize((331, 331)) for image in images]
+    images = np.array([np.array(image) for image in images])
+
+    test_images_features = gen_test_features(images)
+
+    y_pred = predict(test_images_features, dog_model)
+    # ans = []
+    results = {}
+    for i in range(len(y_pred)):
+        # ans.append(f'{urls[i]} : {dog_breeds[np.argmax(y_pred[i])]}')
+        breed = np.argmax(y_pred[i])
+        # print(breed)
+        if breed in results:
+            results[breed] += 1
+        else:
+            results[breed] = 1
+
+    best_breed = ''
+    best_count = -1
+    for breed in results.keys():
+        if results[breed] > best_count:
+            best_count = results[breed]
+            best_breed = breed
+
+    return best_breed
+
+
 # ------------------------------------------------------------------------------------------------------------------------------
 @api_view(['GET'])
 def HelloAPI(request):
     return Response("hello world")
 
 
+@api_view(['GET'])
+def POSTID(request):
+    post_id = int(request.GET.get('postId'))
+    cursor.execute(f"SELECT type FROM posts WHERE post_id = {int(post_id)}")
+    result = cursor.fetchone()
+    post_type = -1
+    if result:
+        post_type = result[0]
+        # print("Type:", post_type)
+    else:
+        pass
+        # print("Post not found")
+
+    # 0은 실종, 실종의 경우에만 유사도 분석/나머지는 품종 분류
+    if type == 0:
+        setDBSimilarity(post_type)
+    else:
+        breed = get_breed_with_post_id(post_id)
+        # UPDATE [테이블] SET [열] = '변경할값' WHERE [조건]
+        sql = f"update posts set breed_ai = {breed} where post_id = {post_id}"
+        cursor.execute(sql)
+        sql = 'commit'
+        cursor.execute(sql)
+
+    return HttpResponse(post_id, content_type='text/plain')
+
+
 @api_view(['GET', 'POST'])
 def Breed_classify(request):
     if request.method == 'GET':
-
-        # GET request의 http header에 postid을 보낸다면 HTTP_POSTID와 같이 HTTP와 언더바 뒤의 대문자로 긁어와야한다
-        # 헤더에 언더바를 써서는 장고에서 인식할 수 없다.
         post_id = request.META.get('HTTP_POSTID')
-        # print(request.META.get('HTTP_POSTID'))
-
-        # 여기 코드에 DB에서 POSTPICTURES table의 postid로 사진'들'을 찾은 다음,
-        # 위에 따옴표 3개짜리 주석에 있는 코드들로 확인하고
-        # 개수를 따져서 가장 높은거 1개를 정하고 Response에 담아서 보내줘야한다
-
+        '''
+        post_id = request.META.get('HTTP_POSTID')
+        post_type = cursor.execute(f'select type from posts where post_id = {post_id}')
+        print("muyaho" + post_type.__str__())
+        '''
         urls = []
 
         # sql과 실행
@@ -197,8 +300,6 @@ def Breed_classify(request):
         # 앞 뒤 자르고 url만 남김
         for line in res:
             urls.append(line.__str__()[2:-3])
-
-        print(urls)
 
         '''
         urls안에 있는 url들을 하나하나 keras의 load.img로 가져온다음
@@ -222,9 +323,6 @@ def Breed_classify(request):
 
         return Response(ans)
 
-
-
-    # 여기서는 multipart_data를 받는 방법을 파악하여
     # 사진의 분류들중 가장 많은수를 확인해야한다.
     elif request.method == 'POST':
 
@@ -261,60 +359,11 @@ def Breed_classify(request):
 @api_view(['POST'])
 def Image_Similarity(request):
     if request.method == 'POST':
-        # inception_preprocessor = keras.applications.inception_resnet_v2.preprocess_input
         post_id = request.data.get('post_id')
 
-        # post_id = request.META.get('HTTP_POSTID')
-        sql = f"select picture, post_id from postpictures where not post_id = '{post_id}'"
-        res = cursor.execute(sql)
-        urls = []
-        picture_post_id = []
-        best_score = 0.0
-        best_post_id = -1
+        best = setDBSimilarity(post_id)
 
-        # 앞 뒤 자르고 url만 남김
-        for line in res:
-            urls.append(line[0].__str__())
-            picture_post_id.append(line[1])
-
-        sql = f"select picture from postpictures where post_id = '{post_id}'"
-        res = cursor.execute(sql)
-        post_urls = []
-
-        # 앞 뒤 자르고 url만 남김
-        for line in res:
-            post_urls.append(line.__str__()[2:-3])
-
-        images = []
-        for url in urls:
-            response = requests.get(url)
-            images.append(Image.open(BytesIO(response.content)))
-
-        images = [image.resize((331, 331)) for image in images]
-        images = np.array([np.array(image) for image in images])
-
-        post_images = []
-        for url in post_urls:
-            response = requests.get(url)
-            post_images.append(Image.open(BytesIO(response.content)))
-
-        post_images = [image.resize((331, 331)) for image in post_images]
-        post_images = np.array([np.array(image) for image in post_images])
-
-        post_feature_vector = gen_test_features(post_images)
-        feature_vector = gen_test_features(images)
-
-        for i in range(len(urls)):
-            for j in range(len(post_feature_vector)):
-                now = cos_sim(post_feature_vector[j], feature_vector[i])
-                if now > best_score:
-                    best_score = now
-                    best_post_id = picture_post_id[i]
-
-        r = requests.post('http://127.0.0.1:8080/post/analyze', headers={'Content-type': 'application/json'},
-                          json={"missingPostId": post_id, "sightPostId": best_post_id})
-
-        return Response(best_post_id)
+        return Response(best)
 
     '''
         elif request.method == 'POST':
