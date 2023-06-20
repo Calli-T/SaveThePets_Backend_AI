@@ -7,4 +7,4 @@ class ClassifySerializer(serializers.Serializer):
 
 
 class SimilaritySerializer(serializers.Serializer):
-    image = serializers.CharField(max_length=10000000)
+    post_id = serializers.IntegerField()

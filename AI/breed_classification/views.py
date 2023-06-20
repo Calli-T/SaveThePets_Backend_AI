@@ -258,17 +258,19 @@ def Breed_classify(request):
         return Response(ans)
 
 
-@api_view(['GET', 'POST'])
+@api_view(['POST'])
 def Image_Similarity(request):
-    if request.method == 'GET':
-        inception_preprocessor = keras.applications.inception_resnet_v2.preprocess_input
+    if request.method == 'POST':
+        # inception_preprocessor = keras.applications.inception_resnet_v2.preprocess_input
+        post_id = request.data.get('post_id')
 
-        post_id = request.META.get('HTTP_POSTID')
+        # post_id = request.META.get('HTTP_POSTID')
         sql = f"select picture, post_id from postpictures where not post_id = '{post_id}'"
         res = cursor.execute(sql)
         urls = []
         picture_post_id = []
         best_score = 0.0
+        best_post_id = -1
 
         # 앞 뒤 자르고 url만 남김
         for line in res:
@@ -307,10 +309,15 @@ def Image_Similarity(request):
                 now = cos_sim(post_feature_vector[j], feature_vector[i])
                 if now > best_score:
                     best_score = now
+                    best_post_id = picture_post_id[i]
 
-        return Response(best_score)
+        r = requests.post('http://127.0.0.1:8080/post/analyze', headers={'Content-type': 'application/json'},
+                          json={"missingPostId": post_id, "sightPostId": best_post_id})
 
-    elif request.method == 'POST':
+        return Response(best_post_id)
+
+    '''
+        elif request.method == 'POST':
         # 이미지 개수 가져옴
         image_len = len(request.data)
 
@@ -336,6 +343,7 @@ def Image_Similarity(request):
         feature_vector = gen_test_features(images)
 
         return Response(cos_sim(feature_vector[0], feature_vector[1]))
+        '''
 
 
 # ------------------------------------------------------------------------------------------------------------------------------
