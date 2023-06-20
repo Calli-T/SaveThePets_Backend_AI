@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3fdd73fd-e72b-402e-8e35-843e634b9919" name="변경" comment="Similarity post_id 받아서 DB 보고 가져와서 best 값 사용하도록 수정함&#10;DB 업뎃이랑 spring에 연락하는건 다음에 할일" />
+    <list default="true" id="3fdd73fd-e72b-402e-8e35-843e634b9919" name="변경" comment="Similarity post_id 받아서 DB 보고 가져와서 best 값 사용하도록 수정함&#10;DB 업뎃이랑 spring에 연락하는건 다음에 할일">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -117,7 +119,14 @@
       <option name="project" value="LOCAL" />
       <updated>1687231464624</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Similarity post_id 받아서 DB 보고 가져와서 best 값 사용하도록 수정함&#10;DB 업뎃이랑 spring에 연락하는건 다음에 할일">
+      <created>1687232644556</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1687232644556</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
