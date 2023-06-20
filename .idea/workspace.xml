@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3fdd73fd-e72b-402e-8e35-843e634b9919" name="변경" comment="bit file init">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AI/breed_classification/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/AI/breed_classification/views.py" afterDir="false" />
-    </list>
+    <list default="true" id="3fdd73fd-e72b-402e-8e35-843e634b9919" name="변경" comment="Similarity post_id 받아서 DB 보고 가져와서 best 값 사용하도록 수정함&#10;DB 업뎃이랑 spring에 연락하는건 다음에 할일" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -113,7 +110,14 @@
       <option name="project" value="LOCAL" />
       <updated>1686829225609</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Similarity post_id 받아서 DB 보고 가져와서 best 값 사용하도록 수정함&#10;DB 업뎃이랑 spring에 연락하는건 다음에 할일">
+      <created>1687231464624</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1687231464624</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -130,7 +134,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="init" />
     <MESSAGE value="bit file init" />
-    <option name="LAST_COMMIT_MESSAGE" value="bit file init" />
+    <MESSAGE value="Similarity post_id 받아서 DB 보고 가져와서 best 값 사용하도록 수정함&#10;DB 업뎃이랑 spring에 연락하는건 다음에 할일" />
+    <option name="LAST_COMMIT_MESSAGE" value="Similarity post_id 받아서 DB 보고 가져와서 best 값 사용하도록 수정함&#10;DB 업뎃이랑 spring에 연락하는건 다음에 할일" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
