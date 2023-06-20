@@ -198,6 +198,8 @@ def Breed_classify(request):
         for line in res:
             urls.append(line.__str__()[2:-3])
 
+        print(urls)
+
         '''
         urls안에 있는 url들을 하나하나 keras의 load.img로 가져온다음
         그걸 numpy배열로 만들어 list comprehension으로 하나의 list로 만들고
@@ -232,8 +234,10 @@ def Breed_classify(request):
         # 이미지 개수만큼 'image' + '번호'를 가져옴
         images = []
         image_names = []
+
         for i in range(image_len):
             images.append(request.data.get('image' + str(i + 1)))
+            image_names.append(request.data.get('image' + str(i + 1)).__str__())
 
         # 가져온 이미지 바이트 스트림을 pillow로 변환
         images = [Image.open(image) for image in images]
@@ -257,14 +261,54 @@ def Breed_classify(request):
 @api_view(['GET', 'POST'])
 def Image_Similarity(request):
     if request.method == 'GET':
-
         inception_preprocessor = keras.applications.inception_resnet_v2.preprocess_input
-        dir_path = os.path.join(root, 'breed_classification', 'two_pics')
-        img = images_to_array(dir_path)
-        # print(np.shape(img))
-        feature_vector = get_features(InceptionV3, inception_preprocessor, img_size, img)
 
-        return Response(cos_sim(feature_vector[0], feature_vector[1]))
+        post_id = request.META.get('HTTP_POSTID')
+        sql = f"select picture, post_id from postpictures where not post_id = '{post_id}'"
+        res = cursor.execute(sql)
+        urls = []
+        picture_post_id = []
+        best_score = 0.0
+
+        # 앞 뒤 자르고 url만 남김
+        for line in res:
+            urls.append(line[0].__str__())
+            picture_post_id.append(line[1])
+
+        sql = f"select picture from postpictures where post_id = '{post_id}'"
+        res = cursor.execute(sql)
+        post_urls = []
+
+        # 앞 뒤 자르고 url만 남김
+        for line in res:
+            post_urls.append(line.__str__()[2:-3])
+
+        images = []
+        for url in urls:
+            response = requests.get(url)
+            images.append(Image.open(BytesIO(response.content)))
+
+        images = [image.resize((331, 331)) for image in images]
+        images = np.array([np.array(image) for image in images])
+
+        post_images = []
+        for url in post_urls:
+            response = requests.get(url)
+            post_images.append(Image.open(BytesIO(response.content)))
+
+        post_images = [image.resize((331, 331)) for image in post_images]
+        post_images = np.array([np.array(image) for image in post_images])
+
+        post_feature_vector = gen_test_features(post_images)
+        feature_vector = gen_test_features(images)
+
+        for i in range(len(urls)):
+            for j in range(len(post_feature_vector)):
+                now = cos_sim(post_feature_vector[j], feature_vector[i])
+                if now > best_score:
+                    best_score = now
+
+        return Response(best_score)
 
     elif request.method == 'POST':
         # 이미지 개수 가져옴
