@@ -66,11 +66,11 @@ cat_breeds = ['abyssinian cat', 'american shorthair cat', 'balinese cat', 'benga
 # print(os.path.join(root, 'breed_classification', 'pics'))
 
 # ------------------------------------------------------------------------------------------------------------------------------
-LOCATION = r"C:\Users\joy14\PycharmProjects\AIServer\AI\instantclient_21_10"  # 나중에 상대경로로 지정
-os.environ["PATH"] = LOCATION + ";" + os.environ["PATH"]  # 환경변수 등록, ec2에 올리려면 따로 지정해줘야할듯
+# LOCATION = r"/app/AI/instantclient_21_10"  # 나중에 상대경로로 지정
+# os.environ["PATH"] = LOCATION + ";" + os.environ["PATH"]  # 환경변수 등록, ec2에 올리려면 따로 지정해줘야할듯
 
 # 연결
-con = cx_Oracle.connect("scott", "tiger", "127.0.0.1:1521/xepdb1", encoding="UTF-8")
+con = cx_Oracle.connect("scott", "tiger", "host.docker.internal:1521/xepdb1", encoding="UTF-8")
 cursor = con.cursor()
 
 
@@ -286,11 +286,7 @@ def POSTID(request):
 def Breed_classify(request):
     if request.method == 'GET':
         post_id = request.META.get('HTTP_POSTID')
-        '''
-        post_id = request.META.get('HTTP_POSTID')
-        post_type = cursor.execute(f'select type from posts where post_id = {post_id}')
-        print("muyaho" + post_type.__str__())
-        '''
+
         urls = []
 
         # sql과 실행
@@ -360,90 +356,6 @@ def Breed_classify(request):
 def Image_Similarity(request):
     if request.method == 'POST':
         post_id = request.data.get('post_id')
-
         best = setDBSimilarity(post_id)
 
         return Response(best)
-
-    '''
-        elif request.method == 'POST':
-        # 이미지 개수 가져옴
-        image_len = len(request.data)
-
-        # 이미지 2개 아니면 거름
-        if image_len != 2:
-            return Response('BAD REQUEST', status=status.HTTP_400_BAD_REQUEST)
-
-        # 이미지 개수만큼 'image' + '번호'를 가져옴
-        images = []
-
-        for i in range(image_len):
-            images.append(request.data.get('image' + str(i + 1)))
-
-        # 가져온 이미지 바이트 스트림을 pillow로 변환
-        images = [Image.open(image) for image in images]
-
-        # 변환된 이미지를 331x331 크기의 이미지로 변환후 np 배열로 바꿈
-        images = [image.resize((331, 331)) for image in images]
-        images = np.array([np.array(image) for image in images])
-
-        # 배열로 특징 벡터를 뽑고 모델에 넣어 나온 값으로 추정
-
-        feature_vector = gen_test_features(images)
-
-        return Response(cos_sim(feature_vector[0], feature_vector[1]))
-        '''
-
-
-# ------------------------------------------------------------------------------------------------------------------------------
-'''
-        # 인식 코드
-        print(np.shape(images_to_array(os.path.join(root, 'breed_classification', "pics"))))
-        test_images_features = gen_test_features(images_to_array(os.path.join(root, 'breed_classification', "pics")))
-        y_pred = predict(test_images_features, dog_model)
-        list = os.listdir(os.path.join(root, 'breed_classification', 'pics'))
-        ans = []
-        for i in range(len(y_pred)):
-            # print(y_pred[i])
-            ans.append(f'{list[i]} : {dog_breeds[np.argmax(y_pred[i])]}')
-
-        return Response(ans)
-        '''
-
-'''
-        serializer = ClassifySerializer(data=request.data, many=True)
-        if serializer.is_valid():
-            return Response(serializer.data, status=200)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        '''
-
-'''
-        post_id = request.META.get('HTTP_POSTID')
-
-        return Response(post_id)
-        '''
-
-'''
-        serializer = SimilaritySerializer(data=request.data, many=True)
-
-        if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        # print(serializer.data[0]['image'])
-
-        # base64 decode & padding
-        str1 = serializer.data[0]['image']
-        str2 = serializer.data[1]['image']
-        str1 = str1 + '=' * (4 - len(str1) % 4)
-        str2 = str2 + '=' * (4 - len(str2) % 4)
-        img1 = Image.open(BytesIO(base64.b64decode(str1)))
-        img2 = Image.open(BytesIO(base64.b64decode(str2)))
-
-        inception_preprocessor = keras.applications.inception_resnet_v2.preprocess_input
-        imgs = images_to_array("muyhoa")
-        print("hoyamu")
-        print(np.shape(imgs))
-        feature_vector = get_features(InceptionV3, inception_preprocessor, img_size, imgs)
-
-        return Response(cos_sim(feature_vector[0], feature_vector[1]))
-        '''

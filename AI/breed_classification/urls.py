@@ -1,5 +1,5 @@
-from django.urls import path, include
-from .views import HelloAPI, Breed_classify, Image_Similarity, POSTID
+from django.urls import path
+from .views import Breed_classify, Image_Similarity, POSTID
 
 
 urlpatterns = [

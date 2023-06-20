@@ -4,8 +4,44 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3fdd73fd-e72b-402e-8e35-843e634b9919" name="변경" comment="1.0 final commit">
+    <list default="true" id="3fdd73fd-e72b-402e-8e35-843e634b9919" name="변경" comment="venv gone">
+      <change afterPath="$PROJECT_DIR$/.dockerignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/legacy.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AI/breed_classification/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/AI/breed_classification/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AI/breed_classification/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/AI/breed_classification/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AI/instantclient_21_10/BASIC_LICENSE" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AI/instantclient_21_10/BASIC_README" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AI/instantclient_21_10/adrci.exe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AI/instantclient_21_10/adrci.sym" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AI/instantclient_21_10/genezi.exe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AI/instantclient_21_10/genezi.sym" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AI/instantclient_21_10/network/admin/README" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AI/instantclient_21_10/oci.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AI/instantclient_21_10/oci.sym" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AI/instantclient_21_10/ocijdbc21.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AI/instantclient_21_10/ocijdbc21.sym" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AI/instantclient_21_10/ociw32.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AI/instantclient_21_10/ociw32.sym" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AI/instantclient_21_10/ojdbc8.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AI/instantclient_21_10/oramysql.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AI/instantclient_21_10/oramysql.sym" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AI/instantclient_21_10/orannzsbb.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AI/instantclient_21_10/orannzsbb.sym" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AI/instantclient_21_10/oraocci21.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AI/instantclient_21_10/oraocci21.sym" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AI/instantclient_21_10/oraocci21d.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AI/instantclient_21_10/oraocci21d.sym" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AI/instantclient_21_10/oraociei.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AI/instantclient_21_10/oraociei.sym" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AI/instantclient_21_10/orasql.dll" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AI/instantclient_21_10/orasql.sym" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AI/instantclient_21_10/ucp.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AI/instantclient_21_10/uidrvci.exe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AI/instantclient_21_10/uidrvci.sym" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AI/instantclient_21_10/xstreams.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AI/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/AI/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -147,7 +183,21 @@
       <option name="project" value="LOCAL" />
       <updated>1687260298980</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="requirements.txt">
+      <created>1687261604354</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1687261604354</updated>
+    </task>
+    <task id="LOCAL-00009" summary="venv gone">
+      <created>1687261749604</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1687261749604</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -167,7 +217,9 @@
     <MESSAGE value="Similarity post_id 받아서 DB 보고 가져와서 best 값 사용하도록 수정함&#10;DB 업뎃이랑 spring에 연락하는건 다음에 할일" />
     <MESSAGE value="로직 구현 시밀러리티" />
     <MESSAGE value="1.0 final commit" />
-    <option name="LAST_COMMIT_MESSAGE" value="1.0 final commit" />
+    <MESSAGE value="requirements.txt" />
+    <MESSAGE value="venv gone" />
+    <option name="LAST_COMMIT_MESSAGE" value="venv gone" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
