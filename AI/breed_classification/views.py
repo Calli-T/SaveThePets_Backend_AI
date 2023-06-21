@@ -27,6 +27,7 @@ import platform
 import requests
 from PIL import Image
 from io import BytesIO
+
 # ------------------------------------------------------------------------------------------------------------------------------
 root = os.getcwd()
 
@@ -206,7 +207,7 @@ def setDBSimilarity(post_id):
     return best_post_id
 
 
-def get_breed_with_post_id(post_id):
+def get_breed_with_post_id(post_id, species=1):
     urls = []
 
     sql = 'select picture from postpictures where post_id = ' + str(post_id)
@@ -225,9 +226,12 @@ def get_breed_with_post_id(post_id):
     images = np.array([np.array(image) for image in images])
 
     test_images_features = gen_test_features(images)
+    y_pred = []
+    if species == 1:
+        y_pred = predict(test_images_features, dog_model)
+    elif species == 0:
+        y_pred = predict(test_images_features, cat_model)
 
-    y_pred = predict(test_images_features, dog_model)
-    # ans = []
     results = {}
     for i in range(len(y_pred)):
         # ans.append(f'{urls[i]} : {dog_breeds[np.argmax(y_pred[i])]}')
@@ -257,21 +261,21 @@ def HelloAPI(request):
 @api_view(['GET'])
 def POSTID(request):
     post_id = int(request.GET.get('postId'))
-    cursor.execute(f"SELECT type FROM posts WHERE post_id = {int(post_id)}")
-    result = cursor.fetchone()
+
+    # 게시글 타입, 개/고양이 정보 확인
     post_type = -1
+    species = -1  # 0은 고양이, 1은 개
+    cursor.execute(f"SELECT type, species FROM posts WHERE post_id = {int(post_id)}")
+    result = cursor.fetchone()
     if result:
         post_type = result[0]
-        # print("Type:", post_type)
-    else:
-        pass
-        # print("Post not found")
+        species = result[1]
 
     # 0은 실종, 실종의 경우에만 유사도 분석/나머지는 품종 분류
     if type == 0:
         setDBSimilarity(post_type)
     else:
-        breed = get_breed_with_post_id(post_id)
+        breed = get_breed_with_post_id(post_id, species)
         # UPDATE [테이블] SET [열] = '변경할값' WHERE [조건]
         sql = f"update posts set breed_ai = {breed} where post_id = {post_id}"
         cursor.execute(sql)
@@ -327,8 +331,8 @@ def Breed_classify(request):
         # 이미지 개수만큼 'image' + '번호'를 가져옴
         images = []
         image_names = []
-
-        for i in range(image_len):
+        species = int(request.data.get('species'))
+        for i in range(image_len -1):
             images.append(request.data.get('image' + str(i + 1)))
             image_names.append(request.data.get('image' + str(i + 1)).__str__())
 
@@ -342,13 +346,35 @@ def Breed_classify(request):
         # 배열로 특징 벡터를 뽑고 모델에 넣어 나온 값으로 추정
 
         test_images_features = gen_test_features(images)
+        y_pred = []
+        if species == 1:
+            y_pred = predict(test_images_features, dog_model)
+        elif species == 0:
+            y_pred = predict(test_images_features, cat_model)
 
-        y_pred = predict(test_images_features, dog_model)
+        '''
         ans = []
         for i in range(len(y_pred)):
             ans.append(f'{image_names[i]} : {dog_breeds[np.argmax(y_pred[i])]}')
+        '''
+        results = {}
+        for i in range(len(y_pred)):
+            breed = np.argmax(y_pred[i])
+            if breed in results:
+                results[breed] += 1
+            else:
+                results[breed] = 1
 
-        return Response(ans)
+        print(results)
+
+        best_breed = ''
+        best_count = -1
+        for breed in results.keys():
+            if results[breed] > best_count:
+                best_count = results[breed]
+                best_breed = breed
+
+        return Response(best_breed)
 
 
 @api_view(['POST'])

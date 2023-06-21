@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3fdd73fd-e72b-402e-8e35-843e634b9919" name="변경" comment="docker init">
+    <list default="true" id="3fdd73fd-e72b-402e-8e35-843e634b9919" name="변경" comment="for window compatibility">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AI/breed_classification/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/AI/breed_classification/views.py" afterDir="false" />
     </list>
@@ -169,7 +169,14 @@
       <option name="project" value="LOCAL" />
       <updated>1687275674352</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="for window compatibility">
+      <created>1687329535477</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1687329535477</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -192,7 +199,8 @@
     <MESSAGE value="requirements.txt" />
     <MESSAGE value="venv gone" />
     <MESSAGE value="docker init" />
-    <option name="LAST_COMMIT_MESSAGE" value="docker init" />
+    <MESSAGE value="for window compatibility" />
+    <option name="LAST_COMMIT_MESSAGE" value="for window compatibility" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
