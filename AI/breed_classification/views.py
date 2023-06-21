@@ -260,29 +260,32 @@ def HelloAPI(request):
 
 @api_view(['GET'])
 def POSTID(request):
-    post_id = int(request.GET.get('postId'))
+    try:
+        post_id = int(request.GET.get('postId'))
 
-    # 게시글 타입, 개/고양이 정보 확인
-    post_type = -1
-    species = -1  # 0은 고양이, 1은 개
-    cursor.execute(f"SELECT type, species FROM posts WHERE post_id = {int(post_id)}")
-    result = cursor.fetchone()
-    if result:
-        post_type = result[0]
-        species = result[1]
+        # 게시글 타입, 개/고양이 정보 확인
+        post_type = -1
+        species = -1  # 0은 고양이, 1은 개
+        cursor.execute(f"SELECT type, species FROM posts WHERE post_id = {int(post_id)}")
+        result = cursor.fetchone()
+        if result:
+            post_type = result[0]
+            species = result[1]
 
-    # 0은 실종, 실종의 경우에만 유사도 분석/나머지는 품종 분류
-    if type == 0:
-        setDBSimilarity(post_type)
-    else:
-        breed = get_breed_with_post_id(post_id, species)
-        # UPDATE [테이블] SET [열] = '변경할값' WHERE [조건]
-        sql = f"update posts set breed_ai = {breed} where post_id = {post_id}"
-        cursor.execute(sql)
-        sql = 'commit'
-        cursor.execute(sql)
+        # 0은 실종, 실종의 경우에만 유사도 분석/나머지는 품종 분류
+        if type == 0:
+            setDBSimilarity(post_type)
+        else:
+            breed = get_breed_with_post_id(post_id, species)
+            # UPDATE [테이블] SET [열] = '변경할값' WHERE [조건]
+            sql = f"update posts set breed_ai = {breed} where post_id = {post_id}"
+            cursor.execute(sql)
+            sql = 'commit'
+            cursor.execute(sql)
 
-    return HttpResponse(post_id, content_type='text/plain')
+        return HttpResponse(post_id, content_type='text/plain')
+    except:
+        return HttpResponse('error', status=404)
 
 
 @api_view(['GET', 'POST'])
@@ -324,57 +327,54 @@ def Breed_classify(request):
 
     # 사진의 분류들중 가장 많은수를 확인해야한다.
     elif request.method == 'POST':
+        try:
+            # 이미지 개수 가져옴
+            image_len = len(request.data)
 
-        # 이미지 개수 가져옴
-        image_len = len(request.data)
+            # 이미지 개수만큼 'image' + '번호'를 가져옴
+            images = []
+            image_names = []
+            species = int(request.data.get('species'))
+            for i in range(image_len - 1):
+                images.append(request.data.get('image' + str(i + 1)))
+                image_names.append(request.data.get('image' + str(i + 1)).__str__())
 
-        # 이미지 개수만큼 'image' + '번호'를 가져옴
-        images = []
-        image_names = []
-        species = int(request.data.get('species'))
-        for i in range(image_len -1):
-            images.append(request.data.get('image' + str(i + 1)))
-            image_names.append(request.data.get('image' + str(i + 1)).__str__())
+            # 가져온 이미지 바이트 스트림을 pillow로 변환
+            images = [Image.open(image) for image in images]
 
-        # 가져온 이미지 바이트 스트림을 pillow로 변환
-        images = [Image.open(image) for image in images]
+            # 변환된 이미지를 331x331 크기의 이미지로 변환후 np 배열로 바꿈
+            images = [image.resize((331, 331)) for image in images]
+            images = np.array([np.array(image) for image in images])
 
-        # 변환된 이미지를 331x331 크기의 이미지로 변환후 np 배열로 바꿈
-        images = [image.resize((331, 331)) for image in images]
-        images = np.array([np.array(image) for image in images])
+            # 배열로 특징 벡터를 뽑고 모델에 넣어 나온 값으로 추정
 
-        # 배열로 특징 벡터를 뽑고 모델에 넣어 나온 값으로 추정
+            test_images_features = gen_test_features(images)
+            y_pred = []
+            if species == 1:
+                y_pred = predict(test_images_features, dog_model)
+            elif species == 0:
+                y_pred = predict(test_images_features, cat_model)
 
-        test_images_features = gen_test_features(images)
-        y_pred = []
-        if species == 1:
-            y_pred = predict(test_images_features, dog_model)
-        elif species == 0:
-            y_pred = predict(test_images_features, cat_model)
+            results = {}
+            for i in range(len(y_pred)):
+                breed = np.argmax(y_pred[i])
+                if breed in results:
+                    results[breed] += 1
+                else:
+                    results[breed] = 1
 
-        '''
-        ans = []
-        for i in range(len(y_pred)):
-            ans.append(f'{image_names[i]} : {dog_breeds[np.argmax(y_pred[i])]}')
-        '''
-        results = {}
-        for i in range(len(y_pred)):
-            breed = np.argmax(y_pred[i])
-            if breed in results:
-                results[breed] += 1
-            else:
-                results[breed] = 1
+            print(results)
 
-        print(results)
+            best_breed = ''
+            best_count = -1
+            for breed in results.keys():
+                if results[breed] > best_count:
+                    best_count = results[breed]
+                    best_breed = breed
 
-        best_breed = ''
-        best_count = -1
-        for breed in results.keys():
-            if results[breed] > best_count:
-                best_count = results[breed]
-                best_breed = breed
-
-        return Response(best_breed)
+            return Response(best_breed)
+        except:
+            return Response('error', status=404)
 
 
 @api_view(['POST'])
