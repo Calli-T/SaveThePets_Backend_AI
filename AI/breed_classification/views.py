@@ -8,8 +8,6 @@ from .serializer import ClassifySerializer, SimilaritySerializer
 # ------------------------------------------------------------------------------------------------------------------------------
 import keras.applications.nasnet
 import numpy as np
-import os
-import time
 from keras.models import Model
 from keras.layers import GlobalAveragePooling2D, Lambda, Input
 from keras.applications.nasnet import NASNetLarge
@@ -24,11 +22,11 @@ from numpy import dot
 
 import cx_Oracle
 import os
+import platform
 
 import requests
 from PIL import Image
 from io import BytesIO
-
 # ------------------------------------------------------------------------------------------------------------------------------
 root = os.getcwd()
 
@@ -66,8 +64,9 @@ cat_breeds = ['abyssinian cat', 'american shorthair cat', 'balinese cat', 'benga
 # print(os.path.join(root, 'breed_classification', 'pics'))
 
 # ------------------------------------------------------------------------------------------------------------------------------
-# LOCATION = r"/app/AI/instantclient_21_10"  # 나중에 상대경로로 지정
-# os.environ["PATH"] = LOCATION + ";" + os.environ["PATH"]  # 환경변수 등록, ec2에 올리려면 따로 지정해줘야할듯
+if platform.system() == 'Windows':
+    LOCATION = r"C:\Users\joy14\PycharmProjects\AIServer\AI\instantclient_21_10_win"  # 나중에 상대경로로 지정
+    os.environ["PATH"] = LOCATION + ";" + os.environ["PATH"]  # 환경변수 등록, ec2에 올리려면 따로 지정해줘야할듯
 
 # 연결
 con = cx_Oracle.connect("scott", "tiger", "host.docker.internal:1521/xepdb1", encoding="UTF-8")
