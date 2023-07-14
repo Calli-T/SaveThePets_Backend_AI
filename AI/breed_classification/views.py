@@ -155,7 +155,7 @@ def cos_sim(A, B):
 
 
 def setDBSimilarity(post_id):
-    sql = f"select picture, post_id from postpictures where not post_id = '{post_id}'"
+    sql = f"select picture, post_id from postpictures where not post_id = {post_id}"
     res = cursor.execute(sql)
     urls = []
     picture_post_id = []
@@ -167,7 +167,7 @@ def setDBSimilarity(post_id):
         urls.append(line[0].__str__())
         picture_post_id.append(line[1])
 
-    sql = f"select picture from postpictures where post_id = '{post_id}'"
+    sql = f"select picture from postpictures where post_id = {post_id}"
     res = cursor.execute(sql)
     post_urls = []
 
@@ -200,9 +200,13 @@ def setDBSimilarity(post_id):
             if now > best_score:
                 best_score = now
                 best_post_id = picture_post_id[i]
+    print(post_id)
+    print(best_post_id)
 
     r = requests.post('http://127.0.0.1:8080/post/analyze', headers={'Content-type': 'application/json'},
                       json={"missingPostId": post_id, "sightPostId": best_post_id})
+    print("muyaho")
+    print(r.status_code)
 
     return best_post_id
 
@@ -362,8 +366,6 @@ def Breed_classify(request):
                     results[breed] += 1
                 else:
                     results[breed] = 1
-
-            print(results)
 
             best_breed = ''
             best_count = -1
