@@ -64,6 +64,12 @@ cat_breeds = ['abyssinian cat', 'american shorthair cat', 'balinese cat', 'benga
 
 # print(os.path.join(root, 'breed_classification', 'pics'))
 
+# 전처리기
+nasnet_preprocessor = keras.applications.nasnet.preprocess_input
+xception_preprocessor = keras.applications.inception_resnet_v2.preprocess_input
+inception_preprocessor = keras.applications.inception_resnet_v2.preprocess_input
+inc_resnet_preprocessor = keras.applications.inception_resnet_v2.preprocess_input
+
 # ------------------------------------------------------------------------------------------------------------------------------
 if platform.system() == 'Windows':
     LOCATION = r"C:\Users\joy14\PycharmProjects\AIServer\AI\instantclient_21_10_win"  # 나중에 상대경로로 지정
@@ -127,11 +133,7 @@ def get_features(model_name, data_preprocessor, input_size, data):
 
 
 def gen_test_features(pics_array):
-    # 전처리기 똑같은거 통합할 것
-    nasnet_preprocessor = keras.applications.nasnet.preprocess_input
-    xception_preprocessor = keras.applications.inception_resnet_v2.preprocess_input
-    inception_preprocessor = keras.applications.inception_resnet_v2.preprocess_input
-    inc_resnet_preprocessor = keras.applications.inception_resnet_v2.preprocess_input
+    # 전처리기 원래 위치
 
     # 특징
     nasnet_features_test = get_features(NASNetLarge, nasnet_preprocessor, img_size, pics_array)
@@ -154,8 +156,8 @@ def cos_sim(A, B):
     return dot(A, B) / (norm(A) * norm(B))
 
 
-def setDBSimilarity(post_id):
-    sql = f"select picture, post_id from postpictures where not post_id = {post_id}"
+def setDBSimilarity(post_id, post_type):
+    sql = f"select picture, post_id from postpictures where not post_id = {post_id} and (select type from posts where post_id = postpictures.post_id) = {post_type}"
     res = cursor.execute(sql)
     urls = []
     picture_post_id = []
@@ -200,13 +202,13 @@ def setDBSimilarity(post_id):
             if now > best_score:
                 best_score = now
                 best_post_id = picture_post_id[i]
-    print(post_id)
-    print(best_post_id)
+    # print(post_id)
+    # print(best_post_id)
 
     r = requests.post('http://127.0.0.1:8080/post/analyze', headers={'Content-type': 'application/json'},
                       json={"missingPostId": post_id, "sightPostId": best_post_id})
-    print("muyaho")
-    print(r.status_code)
+
+    # print(r.status_code)
 
     return best_post_id
 
@@ -255,7 +257,6 @@ def get_breed_with_post_id(post_id, species=1):
 
     return best_breed
 
-
 # ------------------------------------------------------------------------------------------------------------------------------
 @api_view(['GET'])
 def HelloAPI(request):
@@ -270,22 +271,25 @@ def POSTID(request):
         # 게시글 타입, 개/고양이 정보 확인
         post_type = -1
         species = -1  # 0은 고양이, 1은 개
-        cursor.execute(f"SELECT type, species FROM posts WHERE post_id = {int(post_id)}")
+        cursor.execute(f"SELECT type, species FROM posts WHERE post_id = {post_id}")
         result = cursor.fetchone()
         if result:
             post_type = result[0]
             species = result[1]
 
-        # 0은 실종, 실종의 경우에만 유사도 분석/나머지는 품종 분류
-        if type == 0:
-            setDBSimilarity(post_type)
-        else:
+        # 0은 실종, 1은 목격 둘 다 유사도 분석
+        # 목격의 경우에만 품종분류
+        if post_type == 1:
+            setDBSimilarity(post_id, 0)
+
             breed = get_breed_with_post_id(post_id, species)
             # UPDATE [테이블] SET [열] = '변경할값' WHERE [조건]
             sql = f"update posts set breed_ai = {breed} where post_id = {post_id}"
             cursor.execute(sql)
             sql = 'commit'
             cursor.execute(sql)
+        else:
+            setDBSimilarity(post_id, 1)
 
         return HttpResponse(post_id, content_type='text/plain')
     except:
