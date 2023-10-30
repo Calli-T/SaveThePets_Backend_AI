@@ -7,7 +7,6 @@
     <list default="true" id="3fdd73fd-e72b-402e-8e35-843e634b9919" name="변경" comment="신호 안가는 버그 수정완료?">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AI/breed_classification/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/AI/breed_classification/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -133,7 +132,8 @@
       <workItem from="1697455193566" duration="59000" />
       <workItem from="1697455262248" duration="2567000" />
       <workItem from="1697461504541" duration="5366000" />
-      <workItem from="1697482490624" duration="7820000" />
+      <workItem from="1697482490624" duration="9091000" />
+      <workItem from="1698482870617" duration="1286000" />
     </task>
     <task id="LOCAL-00001" summary="init">
       <created>1686828242835</created>

@@ -502,7 +502,7 @@ def Image_Similarity(request):
         for line in res:
             species = line[0]
 
-        best = setDBSimilarity(post_id, species)
+        best = setDBSimilarity(post_id) #, species)
 
         return Response(best)
 
