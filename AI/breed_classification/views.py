@@ -142,8 +142,8 @@ if platform.system() == 'Windows':
 
 # 연결
 # con = cx_Oracle.connect("scott", "tiger", "host.docker.internal:1521/xepdb1", encoding="UTF-8")
-# con = cx_Oracle.connect("scott", "tiger", "127.0.0.1:1521/xepdb1", encoding="UTF-8")
-con = cx_Oracle.connect("SCOTT", "tiger", "110.8.166.180:1521/XE", encoding="UTF-8")
+con = cx_Oracle.connect("scott", "tiger", "127.0.0.1:1521/xepdb1", encoding="UTF-8")
+# con = cx_Oracle.connect("SCOTT", "tiger", "110.8.166.180:1521/XE", encoding="UTF-8")
 
 cursor = con.cursor()
 
