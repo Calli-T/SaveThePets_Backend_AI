@@ -142,8 +142,8 @@ if platform.system() == 'Windows':
 
 # 연결
 # con = cx_Oracle.connect("scott", "tiger", "host.docker.internal:1521/xepdb1", encoding="UTF-8")
-con = cx_Oracle.connect("scott", "tiger", "127.0.0.1:1521/xepdb1", encoding="UTF-8")
-# con = cx_Oracle.connect("SCOTT", "tiger", "110.8.166.180:1521/XE", encoding="UTF-8")
+# con = cx_Oracle.connect("scott", "tiger", "127.0.0.1:1521/xepdb1", encoding="UTF-8")
+con = cx_Oracle.connect("SCOTT", "tiger", "110.8.166.180:1521/XE", encoding="UTF-8")
 
 cursor = con.cursor()
 
@@ -340,11 +340,13 @@ def get_breed_with_post_id(post_id, species=1):
 def HelloAPI(request):
     return Response("hello world")
 
-
+# postId가 들어오는 순간 종을 분류하고 DB 갱신
+# 갱신하고 가장 유사한 post를 골라 DB의 ALARMS도 생성
 @api_view(['GET'])
 def POSTID(request):
     try:
         post_id = int(request.GET.get('postId'))
+        print(post_id)
         breed = -1
 
         # 게시글 타입, 개/고양이 정보 확인
@@ -383,12 +385,14 @@ def POSTID(request):
         return HttpResponse(post_id, content_type='text/plain')
         # return HttpResponse('error', status=404)
 
-
+# GET은 무시(레거시), POST의 경우 사진을 image1, image2... 순서로 받고
+# species도 받아서 품종 분석해서 바로 보내줌
+# front에서 즉시 품종 분석할 때 쓴다
 @api_view(['GET', 'POST'])
 def Breed_classify(request):
     if request.method == 'GET':
         post_id = request.META.get('HTTP_POSTID')
-
+        print(post_id)
         urls = []
 
         # sql과 실행
@@ -438,6 +442,7 @@ def Breed_classify(request):
 
     # 사진의 분류들중 가장 많은수를 확인해야한다.
     elif request.method == 'POST':
+
         try:
             # 이미지 개수 가져옴
             image_len = len(request.data)
@@ -446,12 +451,13 @@ def Breed_classify(request):
             images = []
             image_names = []
             species = int(request.data.get('species'))
+
             for i in range(image_len - 1):
                 images.append(request.data.get('image' + str(i + 1)))
                 image_names.append(request.data.get('image' + str(i + 1)).__str__())
 
             # 가져온 이미지 바이트 스트림을 pillow로 변환
-            images = [Image.open(image) for image in images]
+            images = [Image.open(image).convert('RGB') for image in images]
 
             # 변환된 이미지를 331x331 크기의 이미지로 변환후 np 배열로 바꿈
             images = [image.resize((448, 448)) for image in images]
@@ -487,10 +493,11 @@ def Breed_classify(request):
                     best_breed = breed
 
             return Response(best_breed)
-        except:
-            return Response('error', status=404)
+        except Exception as ex:
+            return Response('error', status=500)
 
-
+# post_id 값을 json으로 보내주면 가장 닮은 사진을 가진 post의 post_id를 보내준다
+# 이것도 레거시 인가?
 @api_view(['POST'])
 def Image_Similarity(request):
     if request.method == 'POST':
