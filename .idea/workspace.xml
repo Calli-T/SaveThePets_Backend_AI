@@ -5,7 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3fdd73fd-e72b-402e-8e35-843e634b9919" name="변경" comment="신호 안가는 버그 수정완료?">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AI/breed_classification/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/AI/breed_classification/views.py" afterDir="false" />
     </list>
@@ -194,7 +193,8 @@
       <workItem from="1699002504376" duration="835000" />
       <workItem from="1699453048696" duration="4109000" />
       <workItem from="1699494926828" duration="7656000" />
-      <workItem from="1699624633170" duration="6682000" />
+      <workItem from="1699624633170" duration="12930000" />
+      <workItem from="1699719878037" duration="7008000" />
     </task>
     <task id="LOCAL-00001" summary="init">
       <created>1686828242835</created>

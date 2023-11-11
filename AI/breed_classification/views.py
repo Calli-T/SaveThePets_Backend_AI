@@ -147,6 +147,7 @@ con = cx_Oracle.connect("SCOTT", "tiger", "110.8.166.180:1521/XE", encoding="UTF
 
 cursor = con.cursor()
 
+
 # -------------------Process--------------------------------------------------------------------------------------------------
 
 def images_to_array(data_dir):
@@ -192,10 +193,11 @@ def cos_sim(A, B):
     return dot(A, B) / (norm(A) * norm(B))
 
 
-def setDBSimilarity(post_id, post_type = 0, species='1'):
-    print(post_id)
+def setDBSimilarity(post_id, post_type=0, species=1):
+    # print(post_id)
 
-    sql = f"select picture, post_id from postpictures where not post_id = {str(post_id)}"# and (select type from posts where post_id = postpictures.post_id) = {post_type}"
+    # post_id가 다르고, type이 다르며 species가 같은 사진의 주소와 포스트 번호를 가져온다.
+    sql = f"select picture, post_id from postpictures where not post_id = {str(post_id)} and not (select type from posts where post_id = postpictures.post_id) = {str(post_type)} and (select species from posts where post_id = postpictures.post_id) = {str(species)}"
 
     res = cursor.execute(sql)
     urls = []
@@ -219,8 +221,8 @@ def setDBSimilarity(post_id, post_type = 0, species='1'):
     images_origin = []
     images = np.empty((len(urls), 448, 448, 3))
 
-    #print("urls:", urls)
-    #print("post_urls: ", post_urls)
+    # print("urls:", urls)
+    # print("post_urls: ", post_urls)
 
     for url in urls:
         response = requests.get(url)
@@ -229,10 +231,10 @@ def setDBSimilarity(post_id, post_type = 0, species='1'):
     for i in range(len(images_origin)):
         images[i] = np.array(images_origin[i].resize((448, 448)))
 
-    #print(len(images))
-    #print("무야호5")
-    #print(images.shape)
-    #print("무야호6")
+    # print(len(images))
+    # print("무야호5")
+    # print(images.shape)
+    # print("무야호6")
 
     post_images_origin = []
     post_images = np.empty((len(urls), 448, 448, 3))
@@ -253,15 +255,15 @@ def setDBSimilarity(post_id, post_type = 0, species='1'):
 
     post_feature_vector = []  # gen_vit_keras_test_feature(post_images, 'dog')  # gen_test_features(post_images)
     feature_vector = []  # gen_vit_keras_test_feature(images, 'dog')  # gen_test_features(images)
-    #print("무야호7")
+    # print("무야호7")
     if species == '1':
         post_feature_vector = gen_vit_keras_test_feature(post_images, 'dog')
         feature_vector = gen_vit_keras_test_feature(images, 'dog')
     elif species == '0':
         post_feature_vector = gen_vit_keras_test_feature(post_images, 'cat')
         feature_vector = gen_vit_keras_test_feature(images, 'cat')
-    #print("무야호8")
-    #print(post_feature_vector.shape)
+    # print("무야호8")
+    # print(post_feature_vector.shape)
 
     for i in range(len(urls)):
         for j in range(len(post_feature_vector)):
@@ -270,18 +272,30 @@ def setDBSimilarity(post_id, post_type = 0, species='1'):
                 best_score = now
                 best_post_id = picture_post_id[i]
     # print(post_id)
-    print("best_post_id: ", best_post_id)
+    # print("best_post_id: ", best_post_id)
 
-    #print(best_post_id)
-    #print("무야호9")
+    # print(best_post_id)
+    # print("무야호9")
+    the_missing = -1
+    the_sight = -1
+
+    if post_type == 0:
+        the_missing = post_id
+        the_sight = best_post_id
+    else:
+        the_missing = best_post_id
+        the_sight = post_id
+
     try:
-        r = requests.post('http://110.8.166.180:4000/post/analyze', headers={'Content-type': 'application/json'},
-                          json={"missingPostId": post_id, "sightPostId": best_post_id})
+        r = requests.post('https://savethepets.kro.kr/spring/post/analyze',
+                          headers={'Content-type': 'application/json'},
+                          json={"missingPostId": the_missing, "sightPostId": the_sight})
+        # json={"missingPostId": post_id, "sightPostId": best_post_id})
         # https://savethepets.kro.kr/spring/analyze
-        #print(r.status_code)
+        # print(r.status_code)
     except:
         print('Error in Backend Spring Server')
-    #print("무야호10")
+    # print("무야호10")
     return best_post_id
 
 
@@ -334,11 +348,25 @@ def get_breed_with_post_id(post_id, species=1):
 
     return best_breed
 
+def setBreedAi(post_id, species):
+    print('before classify')
+
+    breed = get_breed_with_post_id(post_id, species)
+    print("breed: ", breed)
+    # UPDATE [테이블] SET [열] = '변경할값' WHERE [조건]
+    sql = f"update posts set breed_ai = {str(breed)} where post_id = {str(post_id)}"
+    cursor.execute(sql)
+    sql = 'commit'
+    cursor.execute(sql)
+
+    print('classify success')
+
 
 # ------------------------------------------------------------------------------------------------------------------------------
 @api_view(['GET'])
 def HelloAPI(request):
     return Response("hello world")
+
 
 # postId가 들어오는 순간 종을 분류하고 DB 갱신
 # 갱신하고 가장 유사한 post를 골라 DB의 ALARMS도 생성
@@ -346,7 +374,7 @@ def HelloAPI(request):
 def POSTID(request):
     try:
         post_id = int(request.GET.get('postId'))
-        print(post_id)
+        # print(post_id)
         breed = -1
 
         # 게시글 타입, 개/고양이 정보 확인
@@ -358,18 +386,17 @@ def POSTID(request):
             post_type = int(result[0])
             species = int(result[1])
 
-        print('post_type = ', post_type)
-
+        # print('post_type = ', post_type)
 
         # 0은 실종, 1은 목격 둘 다 유사도 분석
         # 목격의 경우에만 품종분류
         if post_type == 0:
             print('before similarity')
-            setDBSimilarity(post_id)
+            setDBSimilarity(post_id, post_type, species)
             print('similarity success')
         else:
             print('before similarity')
-            setDBSimilarity(post_id)
+            setDBSimilarity(post_id, post_type, species)
             print('similarity success')
 
             breed = get_breed_with_post_id(post_id, species)
@@ -384,6 +411,7 @@ def POSTID(request):
     except:
         return HttpResponse(post_id, content_type='text/plain')
         # return HttpResponse('error', status=404)
+
 
 # GET은 무시(레거시), POST의 경우 사진을 image1, image2... 순서로 받고
 # species도 받아서 품종 분석해서 바로 보내줌
@@ -496,6 +524,7 @@ def Breed_classify(request):
         except Exception as ex:
             return Response('error', status=500)
 
+
 # post_id 값을 json으로 보내주면 가장 닮은 사진을 가진 post의 post_id를 보내준다
 # 이것도 레거시 인가?
 @api_view(['POST'])
@@ -509,7 +538,7 @@ def Image_Similarity(request):
         for line in res:
             species = line[0]
 
-        best = setDBSimilarity(post_id) #, species)
+        best = setDBSimilarity(post_id)  # , species)
 
         return Response(best)
 
