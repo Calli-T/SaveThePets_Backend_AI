@@ -193,7 +193,7 @@ def cos_sim(A, B):
     return dot(A, B) / (norm(A) * norm(B))
 
 
-def setDBSimilarity(post_id, post_type=0, species=1):
+def setDBSimilarity(post_id, post_type, species):
     # print(post_id)
 
     # post_id가 다르고, type이 다르며 species가 같은 사진의 주소와 포스트 번호를 가져온다.
@@ -209,6 +209,8 @@ def setDBSimilarity(post_id, post_type=0, species=1):
     for line in res:
         urls.append(line[0].__str__())
         picture_post_id.append(line[1])
+
+    print(picture_post_id)
 
     sql = f"select picture from postpictures where post_id = {str(post_id)}"
     res = cursor.execute(sql)
@@ -256,10 +258,10 @@ def setDBSimilarity(post_id, post_type=0, species=1):
     post_feature_vector = []  # gen_vit_keras_test_feature(post_images, 'dog')  # gen_test_features(post_images)
     feature_vector = []  # gen_vit_keras_test_feature(images, 'dog')  # gen_test_features(images)
     # print("무야호7")
-    if species == '1':
+    if species == 1:
         post_feature_vector = gen_vit_keras_test_feature(post_images, 'dog')
         feature_vector = gen_vit_keras_test_feature(images, 'dog')
-    elif species == '0':
+    elif species == 0:
         post_feature_vector = gen_vit_keras_test_feature(post_images, 'cat')
         feature_vector = gen_vit_keras_test_feature(images, 'cat')
     # print("무야호8")
@@ -276,6 +278,7 @@ def setDBSimilarity(post_id, post_type=0, species=1):
 
     # print(best_post_id)
     # print("무야호9")
+    '''
     the_missing = -1
     the_sight = -1
 
@@ -285,11 +288,13 @@ def setDBSimilarity(post_id, post_type=0, species=1):
     else:
         the_missing = best_post_id
         the_sight = post_id
+    '''
 
     try:
         r = requests.post('https://savethepets.kro.kr/spring/post/analyze',
                           headers={'Content-type': 'application/json'},
-                          json={"missingPostId": the_missing, "sightPostId": the_sight})
+                          json={"missingPostId": post_id, "sightPostId": best_post_id})
+        # json={"missingPostId": the_missing, "sightPostId": the_sight})
         # json={"missingPostId": post_id, "sightPostId": best_post_id})
         # https://savethepets.kro.kr/spring/analyze
         # print(r.status_code)
@@ -347,6 +352,7 @@ def get_breed_with_post_id(post_id, species=1):
             best_breed = breed
 
     return best_breed
+
 
 def setBreedAi(post_id, species):
     print('before classify')
