@@ -45,7 +45,7 @@
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/joy14/PycharmProjects/AIServer/AI&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/joy14/PycharmProjects/AIServer&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -194,7 +194,10 @@
       <workItem from="1699453048696" duration="4109000" />
       <workItem from="1699494926828" duration="7656000" />
       <workItem from="1699624633170" duration="12930000" />
-      <workItem from="1699719878037" duration="9875000" />
+      <workItem from="1699719878037" duration="10991000" />
+      <workItem from="1699856241755" duration="1636000" />
+      <workItem from="1699877228800" duration="87000" />
+      <workItem from="1699877672708" duration="6973000" />
     </task>
     <task id="LOCAL-00001" summary="init">
       <created>1686828242835</created>
@@ -312,7 +315,13 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="CUSTOM_BOOLEAN_PROPERTIES">
+                <map>
+                  <entry key="Show.Git.Branches" value="false" />
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
