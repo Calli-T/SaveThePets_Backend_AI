@@ -38,7 +38,7 @@ cat_model = keras.models.load_model(
     os.path.join(root, 'breed_classification', 'models', 'cat_model.h5'))
 
 dog_breeds = ['bishon_frise', 'chihuahua', 'chow_chow', 'dalmatian', 'doberman_pinscher', 'golden_retriever',
-              'pomeranian', 'poodle', 'pug', 'siberian_husky', 'welsh_corgi', 'yorkshire_terrier']
+              'pomeranian', 'poodle' 'pug', 'siberian_husky', 'welsh_corgi', 'yorkshire_terrier']
 
 cat_breeds = ['bengal_cat', 'bombay_cat', 'british_shorthair_cat', 'ragdoll_cat', 'russian_blue_cat', 'siamese_cat',
               'sphynx_cat']
@@ -199,9 +199,9 @@ def setDBSimilarity(post_id, post_type, species, post_breed):
     # post_id가 다르고, type이 다르며 species가 같은 사진의 주소와 포스트 번호를 가져온다.
     sql = ""
     if post_type == 0:
-        sql = f"select picture, post_id from postpictures where post_id in (select post_id from posts where not type = {str(post_type)} and species = {str(species)} and breed_ai = {str(post_breed)})"
-    else:
-        sql = f"select picture, post_id from postpictures where post_id in (select post_id from posts where not type = {str(post_type)} and species = {str(species)} and breed = {str(post_breed)})"
+        sql = f"select picture, post_id from postpictures where post_id in (select post_id from posts where type = 1 and species = {str(species)} and breed_ai = {str(post_breed)})"
+    elif post_type == 1:
+        sql = f"select picture, post_id from postpictures where post_id in (select post_id from posts where type = 0 and species = {str(species)} and breed = {str(post_breed)})"
 
     res = cursor.execute(sql)
     urls = []
