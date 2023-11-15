@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3fdd73fd-e72b-402e-8e35-843e634b9919" name="변경" comment="신호 안가는 버그 수정완료?">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AI/breed_classification/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/AI/breed_classification/views.py" afterDir="false" />
-    </list>
+    <list default="true" id="3fdd73fd-e72b-402e-8e35-843e634b9919" name="변경" comment="신호 안가는 버그 수정완료?" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -198,7 +195,7 @@
       <workItem from="1699856241755" duration="1636000" />
       <workItem from="1699877228800" duration="87000" />
       <workItem from="1699877672708" duration="7347000" />
-      <workItem from="1700042593600" duration="5659000" />
+      <workItem from="1700042593600" duration="6246000" />
     </task>
     <task id="LOCAL-00001" summary="init">
       <created>1686828242835</created>
